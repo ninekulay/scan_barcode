@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -14,9 +16,10 @@ class MyApiManagement {
         },
       );
       Map<String, dynamic> user = jsonDecode(response.body);
-      var data = User(
-          username: user['username'], password: user['password'].toString());
+      // var data = User(
+      //     username: user['username'], password: user['password'].toString());
       return user;
+      // ignore: duplicate_ignore
     } catch (e) {
       print(e);
     }
@@ -31,9 +34,6 @@ class MyApiManagement {
             'Authorization': 'Basic YWRtaW46bWVpc21laXM=',
           },
           body: jsonEncode(data));
-      print(response.statusCode);
-      print(response.statusCode == 200);
-      print(response.statusCode == "200");
       if (response.statusCode == 200) {
         print("login");
         return true;
@@ -58,7 +58,7 @@ class MyApiManagement {
           body: encodedData);
       print(response.body);
       final prefs = await SharedPreferences.getInstance();
-      final success = prefs.remove('data');
+      prefs.remove('data');
       return true;
     } catch (e) {
       print(e);

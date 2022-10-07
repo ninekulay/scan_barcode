@@ -1,17 +1,17 @@
 import 'dart:convert';
 
 class MyArrayBuffer {
-  String? date;
+  String? barcode;
   String? time;
 
-  MyArrayBuffer({this.date, this.time});
+  MyArrayBuffer({this.barcode, this.time});
 
   factory MyArrayBuffer.fromJson(Map<String, dynamic> jsonData) {
-    return MyArrayBuffer(date: jsonData['date'], time: jsonData['time']);
+    return MyArrayBuffer(barcode: jsonData['barcode'], time: jsonData['time']);
   }
 
   static Map<String, dynamic> toMap(MyArrayBuffer myArr) => {
-        'date': myArr.date,
+        'barcode': myArr.barcode,
         'time': myArr.time,
       };
 
@@ -57,5 +57,29 @@ class LinkReceive {
   factory LinkReceive.fromJson(Map<String, dynamic> jsonData) {
     return LinkReceive(
         username: jsonData['username'], password: jsonData['password']);
+  }
+}
+
+class BarCodeControl {
+  String? barcode;
+  String? date;
+  String? location;
+  String? machineId;
+  String? documentId;
+
+  BarCodeControl(
+      {this.barcode,
+      this.date,
+      this.location,
+      this.machineId,
+      this.documentId});
+
+  factory BarCodeControl.fromJson(Map<String, dynamic> jsonData) {
+    return BarCodeControl(
+        barcode: jsonData['barcode'],
+        date: jsonData['date'],
+        location: jsonData['location'],
+        machineId: jsonData['machineId'],
+        documentId: jsonData['documentId']);
   }
 }

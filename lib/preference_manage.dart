@@ -61,4 +61,38 @@ class PresferenceManagement {
       return false;
     }
   }
+
+  userLogControl(data) async {
+    try {
+      // ignore: avoid_print
+      print(data);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user', data);
+      return true;
+    } catch (e) {
+      // ignore: avoid_print
+      print('error $e');
+      return false;
+    }
+  }
+
+  getUserLogControl() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? data = prefs.getString('user');
+      return data;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  deleteUserLog() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.remove('user');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

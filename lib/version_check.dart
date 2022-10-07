@@ -11,7 +11,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ota_update/ota_update.dart';
 import 'api_manage.dart';
 import 'login.dart';
-import 'custom_dialog.dart';
 
 /// example widget for ota_update plugin
 // class MyAppVersion extends StatefulWidget {
@@ -46,6 +45,7 @@ class MyHomePage extends StatefulWidget {
   final String? title;
 
   @override
+  // ignore: library_private_types_in_public_api
   _MyHomePageState createState() => _MyHomePageState();
 }
 
@@ -75,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       // ignore: avoid_catches_without_on_clauses
     } catch (e) {
+      // ignore: avoid_print
       print('Failed to make OTA update. Details: $e');
       return false;
     }
@@ -93,6 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // ignore: unused_element
   Widget _infoTile(String title, String subtitle) {
     return ListTile(
       title: Text(title),
@@ -107,8 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Scaffold(
-              backgroundColor: Color.fromARGB(255, 255, 255, 255),
-              appBar: AppBar(title: Text("Version Check")),
+              backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+              appBar: AppBar(title: const Text("Version Check")),
               body: Center(
                 child: Column(
                   children: <Widget>[
@@ -129,6 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (snapshot.data['version'] == _packageInfo.version) {
             return LoginPage();
           } else {
+            // ignore: avoid_print
             print(snapshot.data['version'] == _packageInfo.version);
 
             return Scaffold(

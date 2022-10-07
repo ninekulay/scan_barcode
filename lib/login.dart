@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'api_manage.dart';
 import 'qr_scan.dart';
+import 'preference_manage.dart';
 
+// ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
-  TextEditingController usernameController = new TextEditingController();
-  TextEditingController passwordController = new TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
   final MyApiManagement myApi = MyApiManagement();
+  final PresferenceManagement myPref = PresferenceManagement();
+
+  LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,8 +19,8 @@ class LoginPage extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Scaffold(
-            backgroundColor: Color.fromARGB(255, 255, 255, 255),
-            appBar: AppBar(title: Text("Connect Server")),
+            backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+            appBar: AppBar(title: const Text("Connect Server")),
             body: Center(
               child: Column(
                 children: <Widget>[
@@ -81,7 +86,9 @@ class LoginPage extends StatelessWidget {
                     Center(
                       child: ElevatedButton(
                         onPressed: () async {
+                          // ignore: unrelated_type_equality_checks
                           if (usernameController != "" &&
+                              // ignore: unrelated_type_equality_checks
                               passwordController != "") {
                             Map<String, dynamic> data = {
                               "username": usernameController.text,
@@ -89,9 +96,30 @@ class LoginPage extends StatelessWidget {
                             };
                             var checkLogin = await myApi.userLogin(data);
                             if (checkLogin == true) {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => const QRViewExample(),
-                              ));
+                              var checkLocalSave =
+                                  await myPref.userLogControl(data['username']);
+                              if (checkLocalSave == true) {
+                                // ignore: use_build_context_synchronously
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => const QRViewExample(),
+                                ));
+                              } else {
+                                showDialog<String>(
+                                    context: context,
+                                    builder: (BuildContext context) =>
+                                        AlertDialog(
+                                          title: const Text('Login fail!!'),
+                                          content:
+                                              const Text('กรุณาติดต่อ Support'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context, 'OK'),
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        ));
+                              }
                             } else {
                               showDialog<String>(
                                 context: context,

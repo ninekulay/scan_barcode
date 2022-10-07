@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_scanner/login.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'preference_manage.dart';
@@ -61,9 +60,14 @@ class _QRViewExampleState extends State<QRViewExample> {
                           showDialog<String>(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              title: const Text('Barcode Detail'),
+                              title: const Text('Barcode'),
+                              // content: Text(
+                              //     'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}'),
                               content: Text(
-                                  'Barcode Type: ${describeEnum(result!.format)}   Data: ${result!.code}'),
+                                '${result!.code}',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w900, fontSize: 20),
+                              ),
                               actions: <Widget>[
                                 TextButton(
                                   onPressed: () async {
@@ -77,7 +81,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                                 TextButton(
                                   onPressed: () async {
                                     var data = MyArrayBuffer(
-                                        date: result!.code,
+                                        barcode: result!.code,
                                         time: DateTime.now().toString());
                                     myPreference.saveStringValue(data);
                                     setState(() {
@@ -111,14 +115,17 @@ class _QRViewExampleState extends State<QRViewExample> {
                           onPressed: () async {
                             var data =
                                 await myPreference.getSharedPreferences();
-                            if (data != null) {
+                            var userLog =
+                                await myPreference.getUserLogControl();
+                            if (data != null && userLog != null) {
                               dataFromPreference = data;
                               if (dataFromPreference.isNotEmpty) {
                                 showDialog<String>(
                                   context: context,
                                   builder: (BuildContext context) =>
                                       AlertDialog(
-                                    title: const Text('Data in Record'),
+                                    title: Text(
+                                        'User : $userLog , Data in Record'),
                                     content: ListView.builder(
                                         itemCount: dataFromPreference.length,
                                         itemBuilder: (context, index) {
@@ -126,9 +133,9 @@ class _QRViewExampleState extends State<QRViewExample> {
                                             builder: (context, setState) {
                                               return ListTile(
                                                 title: Text(
-                                                    'index : ${index + 1}'),
+                                                    'ลำดับที่ : ${index + 1}'),
                                                 subtitle: Text(
-                                                    'date : ${dataFromPreference[index].date} \ntime : ${dataFromPreference[index].time}'),
+                                                    'barcode : ${dataFromPreference[index].date} \ntime : ${dataFromPreference[index].time}'),
                                                 trailing: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
@@ -266,6 +273,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                             if (datas != null) {
                               var checkRemovePref =
                                   await myPreference.clearAllPrefernece();
+                              // ignore: use_build_context_synchronously
                               final action = await YesNoDialogs.yesOrNoDialog(
                                 context,
                                 'ลบข้อมูลทั้งหมด',
@@ -309,7 +317,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                           label: const Text('Clear All'),
                           style: ElevatedButton.styleFrom(
                               backgroundColor:
-                                  Color.fromARGB(255, 233, 22, 22)),
+                                  const Color.fromARGB(255, 233, 22, 22)),
                         ),
                       ),
                       Container(
@@ -323,9 +331,21 @@ class _QRViewExampleState extends State<QRViewExample> {
                             );
                             if (action == YesNoDialogsAction.yes) {
                               setState(() => tappYesNo = true);
-                              Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => LoginPage(),
-                              ));
+                              // ignore: use_build_context_synchronously
+                              var data = await myPreference.deleteUserLog();
+                              if (data == true) {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => LoginPage(),
+                                ));
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                await ConfirmDialogs.conFirmationDialog(
+                                  context,
+                                  'เกิดข้อผิดพลาด',
+                                  '',
+                                );
+                                setState(() => tappConfirm = true);
+                              }
                             } else {
                               setState(() => tappYesNo = false);
                             }
@@ -336,7 +356,7 @@ class _QRViewExampleState extends State<QRViewExample> {
                           label: const Text('Logout'),
                           style: ElevatedButton.styleFrom(
                               backgroundColor:
-                                  Color.fromARGB(255, 233, 22, 22)),
+                                  const Color.fromARGB(255, 233, 22, 22)),
                         ),
                       ),
                     ],
